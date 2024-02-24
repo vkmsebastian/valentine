@@ -13,7 +13,7 @@
   }
 }
 
-.App-header {
+/* .App-header {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
@@ -22,7 +22,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-}
+} */
 
 .App-link {
   color: #61dafb;
@@ -36,3 +36,20 @@
     transform: rotate(360deg);
   }
 }
+
+html, body { 
+  margin: 0;
+  overflow: hidden;
+}
+
+.backgroundComponent {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+/* * {
+  outline: 1px solid red;
+} */
