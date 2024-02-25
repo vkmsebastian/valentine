@@ -39,7 +39,20 @@ body {
   object-fit: cover;
   border-radius: 20px;
   box-shadow: 0 5px 30px 5px rgba(0, 0, 0, 0.5);
+  /* animation: switchAlbumArt 2s infinite alternate; */
 }
+
+/* @keyframes switchAlbumArt {
+  0% {
+    opacity: 0;
+  }
+  50%{
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+} */
 
 /* Progress */
 .progress-container {

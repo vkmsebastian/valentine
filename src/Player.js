@@ -1,4 +1,4 @@
-import { useState, useEffect} from 'react';
+import React, { useState, useEffect} from 'react';
 import './PlayerCSS.css';
 import axios from 'axios';
 import ben1 from './PlayerFiles/ben1.mp3';
@@ -136,24 +136,45 @@ const songs = [ben1,ben2,ben3];
             formattedAlbumArt[formattedKey] = trackData.image[3][key];
           });
           setAlbumArt(formattedAlbumArt.text);
-          console.log("got metadata");
+          // console.log("got metadata");
         })
         .catch(error => {
           console.error("Error fetching data:", error);
         });
     }, [songIndex]);
 
+
+    // Album Art Flipper
+    let albumArts = [albumArt,pic];
+    const [albumArtIndex, setAlbumArtIndex] = useState(0);
+    useEffect(() => {
+      const switchArt = () => {
+        setAlbumArtIndex(albumArtIndex => (albumArtIndex+1)%2);
+      };
+      if (isPlaying) {
+        const intervalId = setInterval(switchArt,5000);
+      
+      return () => clearInterval(intervalId);
+      }
+    },[isPlaying])
+
+    const AlbumArtComponent = React.memo(({imageSrc}) => {
+      return(
+        <div className="img-container">
+              <img 
+              src={imageSrc} 
+              alt="Album Art"/>
+          </div>
+      );
+    });
+
     function GetMetadata(){
-      // console.log(metadata);
-      // console.log(albumArt);
+      // console.log("metadata")
       if (!metadata){
         return(
           <div className="song-info">
           <div className="img-container">
-              <img 
-              // src='https://i.discogs.com/LlZf8xLqkKFcSYOqJ3hlEVF-OoPXQijxJsYq7mh4K_A/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTIwMDM0/OTY3LTE2MzAyMjI2/MzItNzY0Ni5qcGVn.jpeg' 
-              src={pic}
-              alt="Album Art"/>
+              <img src={pic} alt="Album Art"/>
           </div>
           <h3 id="title"><i class="fa-solid fa-spinner"></i></h3>
           <h4 id="artist"><i class="fa-solid fa-spinner"></i></h4>
@@ -162,9 +183,7 @@ const songs = [ben1,ben2,ben3];
       }
       return(
         <div className="song-info">
-          <div className="img-container">
-              <img src={albumArt} alt="Album Art"/>
-          </div>
+          <AlbumArtComponent imageSrc={albumArts[albumArtIndex]}/>
           <h3 id="title">{metadata.name}</h3>
           <h4 id="artist">{metadata.artist}</h4>
         </div>
