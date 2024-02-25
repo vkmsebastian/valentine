@@ -1,6 +1,16 @@
 import React from 'react';
 // import './HeartAnimation.css'; // Import CSS file for component styling
 
+// function altBackground(){
+//   return {
+//       @media screen and max-width(600px){
+//         display:'none'
+//       }
+
+    
+//   };
+// }
+
 const HeartAnimation = () => {
   return (
     <div className="backgroundComponent">

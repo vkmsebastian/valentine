@@ -4,6 +4,7 @@ import axios from 'axios';
 import ben1 from './PlayerFiles/ben1.mp3';
 import ben2 from './PlayerFiles/ben2.mp3';
 import ben3 from './PlayerFiles/ben3.mp3';
+import pic from './PlayerFiles/pic.JPG';
 
 
 
@@ -14,7 +15,14 @@ const songs = [ben1,ben2,ben3];
     const [songIndex, setSongIndex] = useState(0);
     const [progressValue, setProgressValue] = useState(0);
     const [songbook] = useState(() => 
-    songs.map(item => new Audio(item)));
+      songs.map(item => new Audio(item)));
+    //Metadata vars
+    const [metadata,setMetadata] = useState(null);
+    const [albumArt, setAlbumArt] = useState(null);
+    const songsTitles = ['Sa Susunod Na Habang Buhay', 'Pasalubong', 'Paninindigan Kita'];
+    let track= encodeURIComponent(songsTitles[songIndex]);
+    let link = "https://ws.audioscrobbler.com/2.0/?method=album.search&album="+track+"&api_key=bccc26978623f3244fbf922ec76f8117&format=json";
+
 
     function togglePlay(index) {
       songbook[index].paused ? songbook[index].play() : songbook[index].pause();
@@ -76,33 +84,32 @@ const songs = [ben1,ben2,ben3];
       setSongIndex(idx);
     }
 
-    function getDuration() {
-      let duration = songbook[songIndex].duration;
-      if (isNaN(duration)) {
-        return '';
-      }
-      
-      let minutes = Math.floor(duration / 60);
-      let seconds = Math.floor(duration % 60);
-      
-      let secondsStr = seconds < 10 ? '0' + seconds : seconds;
-    
-      return minutes + ':' + secondsStr;
-    }
+    //Song Duration hook
+    let song = songbook[songIndex];
+    const [time, setTime] = useState(0);
+    useEffect(() => {
+      setTimeout(() =>
+      setTime(song.currentTime),500);
+      setProgressValue((song.currentTime/song.duration)*100+'%');
+    })
 
-    function GetCurrentTime(){
-      let song = songbook[songIndex]
-      const [time, setTime] = useState(0);
-      useEffect(() => {
-        setTimeout(() =>
-        setTime(song.currentTime),100);
-        setProgressValue((song.currentTime/song.duration)*100+'%');
-      })
+    function SongDuration() {
       let minutes = Math.floor(time/60);
       let seconds = Math.floor(time%60);
       let secondsStr = seconds < 10 ? '0' + seconds : seconds;
+      let duration = song.duration;
 
-      return minutes + ':' + secondsStr;
+      if (isNaN(duration)) {return ''}
+      let durationMinutes = Math.floor(duration / 60);
+      let durationSeconds = Math.floor(duration % 60);
+      let durationSecondsStr = durationSeconds < 10 ? '0' + durationSeconds : durationSeconds;
+
+      return(
+        <div className="duration-wrapper">
+          <span id="current-time">{minutes +':'+ secondsStr}</span>
+          <span id="duration">{durationMinutes + ':' + durationSecondsStr}</span>
+        </div>
+      );
     }
 
     function progressClick(e){
@@ -117,36 +124,36 @@ const songs = [ben1,ben2,ben3];
       setProgressValue((newTime/duration)*100+'%');
     }
 
-    function GetMetadata(){
-      const [metadata,setMetadata] = useState(null);
-      const [albumArt, setAlbumArt] = useState(null);
-      const songs = ['Sa Susunod Na Habang Buhay', 'Pasalubong', 'Paninindigan Kita'];
-      let track= encodeURIComponent(songs[songIndex]);
-      let link = "http://ws.audioscrobbler.com/2.0/?method=album.search&album="+track+"&api_key=bccc26978623f3244fbf922ec76f8117&format=json";
-      // console.log(link);
-      useEffect(() => {
-        axios.get(link)
-          .then(response => {
-            const trackData = response.data.results.albummatches.album[0];
-            setMetadata(trackData);
-            const formattedAlbumArt = {};
-            Object.keys(trackData.image[3]).forEach(key => {
-              const formattedKey = key.replace(/#text/g, 'text');
-              formattedAlbumArt[formattedKey] = trackData.image[3][key];
-            });
-            setAlbumArt(formattedAlbumArt.text);
-          })
-          .catch(error => {
-            console.error("Error fetching data:", error);
+    //Metadata hook
+    useEffect(() => {
+      axios.get(link)
+        .then(response => {
+          const trackData = response.data.results.albummatches.album[0];
+          setMetadata(trackData);
+          const formattedAlbumArt = {};
+          Object.keys(trackData.image[3]).forEach(key => {
+            const formattedKey = key.replace(/#text/g, 'text');
+            formattedAlbumArt[formattedKey] = trackData.image[3][key];
           });
-      }, [songIndex]);
-      console.log(metadata);
-      console.log(albumArt);
+          setAlbumArt(formattedAlbumArt.text);
+          console.log("got metadata");
+        })
+        .catch(error => {
+          console.error("Error fetching data:", error);
+        });
+    }, [songIndex]);
+
+    function GetMetadata(){
+      // console.log(metadata);
+      // console.log(albumArt);
       if (!metadata){
         return(
           <div className="song-info">
           <div className="img-container">
-              <img src='https://i.discogs.com/LlZf8xLqkKFcSYOqJ3hlEVF-OoPXQijxJsYq7mh4K_A/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTIwMDM0/OTY3LTE2MzAyMjI2/MzItNzY0Ni5qcGVn.jpeg' alt="Album Art"/>
+              <img 
+              // src='https://i.discogs.com/LlZf8xLqkKFcSYOqJ3hlEVF-OoPXQijxJsYq7mh4K_A/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTIwMDM0/OTY3LTE2MzAyMjI2/MzItNzY0Ni5qcGVn.jpeg' 
+              src={pic}
+              alt="Album Art"/>
           </div>
           <h3 id="title"><i class="fa-solid fa-spinner"></i></h3>
           <h4 id="artist"><i class="fa-solid fa-spinner"></i></h4>
@@ -170,10 +177,7 @@ const songs = [ben1,ben2,ben3];
           <div className="song-controls">
             <div className="progress-container" id="progress-container" onClick={progressClick}>
                 <div style={{width: progressValue}} className="progress" id="progress"></div>
-                <div className="duration-wrapper">
-                    <span id="current-time">{GetCurrentTime()}</span>
-                    <span id="duration">{getDuration()}</span>
-                </div>
+                <SongDuration />
             </div>
             <div className="player-controls">
                   <i className="fas fa-backward" id="prev" title="Previous" onClick={prevSong}></i>

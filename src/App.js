@@ -11,13 +11,6 @@ function App() {
     <Container fluid>
       <Row>
         <Col>
-          <Card>
-          </Card>
-        </Col>
-        <Col>
-         {/* <Image src={pic} thumbnail/> */}
-        </Col>
-        <Col>
           <Player />
         </Col>
       </Row>

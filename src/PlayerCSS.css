@@ -19,7 +19,8 @@ body {
 .player-container {
   height: 500px;
   width: 400px;
-  background: #e7e7e7;
+  background: #e7e7e743;
+  backdrop-filter: blur(5px);
   border-radius: 20px;
   box-shadow: 0 15px 30px 5px rgba(0, 0, 0, 0.3);
 }
@@ -62,6 +63,10 @@ body {
   top: -25px;
   display: flex;
   justify-content: space-between;
+}
+.duration-wrapper span{
+  text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px;
+  
 }
 
 /* Controls */
@@ -114,6 +119,8 @@ body {
 }
 .player-controls i{
   margin:0;
+  text-shadow: 0 0 3px #fff;
+
 }
 
 .song-info{
@@ -122,10 +129,13 @@ body {
 #title{
   text-align: center;
   font-size: 1.3rem;
+  text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #00fff2, 0 0 40px #04f3cf, 0 0 70px #000000;
 }
 #artist{
   text-align: center;
   font-size: 1rem;
+  text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #00fff2, 0 0 40px #04f3cf, 0 0 70px #000000;
+
 }
 .song-controls{
   height: 30%;
