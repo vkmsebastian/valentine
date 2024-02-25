@@ -40,20 +40,6 @@ body {
   box-shadow: 0 5px 30px 5px rgba(0, 0, 0, 0.5);
 }
 
-
-h2 {
-  font-size: 25px;
-  text-align: center;
-  margin: 0;
-}
-
-h3 {
-  font-size: 20px;
-  text-align: center;
-  font-weight: 400;
-  margin: 5px 0 0;
-}
-
 /* Progress */
 .progress-container {
   background: #fff;
@@ -68,7 +54,6 @@ h3 {
   background: #242323;
   border-radius: 5px;
   height: 100%;
-  width: 0%;
   transition: width 0.1s linear;
 }
 
@@ -129,4 +114,19 @@ h3 {
 }
 .player-controls i{
   margin:0;
+}
+
+.song-info{
+  height: 70%;
+}
+#title{
+  text-align: center;
+  font-size: 1.3rem;
+}
+#artist{
+  text-align: center;
+  font-size: 1rem;
+}
+.song-controls{
+  height: 30%;
 }

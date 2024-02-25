@@ -1,36 +1,20 @@
 import { useState, useEffect} from 'react';
-import './PlayerCSS.css'
-import ben1 from './ben1.mp3';
-import ben2 from './ben2.mp3';
-import ben3 from './ben3.flac';
+import './PlayerCSS.css';
+import axios from 'axios';
+import ben1 from './PlayerFiles/ben1.mp3';
+import ben2 from './PlayerFiles/ben2.mp3';
+import ben3 from './PlayerFiles/ben3.mp3';
 
 
-const songs = [
-    {
-      name: 'ben-1',
-      displayName: 'Sa Susunod Na Habang Buhay',
-      artist: 'Ben&Ben',
-      src: ben1
-    },
-    {
-      name: 'ben-2',
-      displayName: 'Lifetime',
-      artist: 'Ben&Ben',
-      src: ben2
-    },
-    {
-      name: 'ben-3',
-      displayName: 'Doors',
-      artist: 'Ben&Ben',
-      src: ben3
-    },
-  ]
+
+const songs = [ben1,ben2,ben3];
   
   export default function Player() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [songIndex, setSongIndex] = useState(0);
+    const [progressValue, setProgressValue] = useState(0);
     const [songbook] = useState(() => 
-    songs.map(item => new Audio(item.src)));
+    songs.map(item => new Audio(item)));
 
     function togglePlay(index) {
       songbook[index].paused ? songbook[index].play() : songbook[index].pause();
@@ -107,38 +91,95 @@ const songs = [
     }
 
     function GetCurrentTime(){
+      let song = songbook[songIndex]
       const [time, setTime] = useState(0);
       useEffect(() => {
         setTimeout(() =>
-        setTime(songbook[songIndex].currentTime),100);
+        setTime(song.currentTime),100);
+        setProgressValue((song.currentTime/song.duration)*100+'%');
       })
       let minutes = Math.floor(time/60);
       let seconds = Math.floor(time%60);
       let secondsStr = seconds < 10 ? '0' + seconds : seconds;
+
       return minutes + ':' + secondsStr;
+    }
+
+    function progressClick(e){
+      let song = songbook[songIndex];
+      let duration = song.duration;
+      const clickedPosition = e.clientX - e.target.getBoundingClientRect().left;
+      const totalWidth = e.target.offsetWidth;
+      const clickedPercentage = clickedPosition / totalWidth;
+      const newTime = clickedPercentage * duration;
+      console.log(newTime);
+      song.fastSeek(newTime);
+      setProgressValue((newTime/duration)*100+'%');
+    }
+
+    function GetMetadata(){
+      const [metadata,setMetadata] = useState(null);
+      const [albumArt, setAlbumArt] = useState(null);
+      const songs = ['Sa Susunod Na Habang Buhay', 'Pasalubong', 'Paninindigan Kita'];
+      let track= encodeURIComponent(songs[songIndex]);
+      let link = "http://ws.audioscrobbler.com/2.0/?method=album.search&album="+track+"&api_key=bccc26978623f3244fbf922ec76f8117&format=json";
+      // console.log(link);
+      useEffect(() => {
+        axios.get(link)
+          .then(response => {
+            const trackData = response.data.results.albummatches.album[0];
+            setMetadata(trackData);
+            const formattedAlbumArt = {};
+            Object.keys(trackData.image[3]).forEach(key => {
+              const formattedKey = key.replace(/#text/g, 'text');
+              formattedAlbumArt[formattedKey] = trackData.image[3][key];
+            });
+            setAlbumArt(formattedAlbumArt.text);
+          })
+          .catch(error => {
+            console.error("Error fetching data:", error);
+          });
+      }, [songIndex]);
+      console.log(metadata);
+      console.log(albumArt);
+      if (!metadata){
+        return(
+          <div className="song-info">
+          <div className="img-container">
+              <img src='https://i.discogs.com/LlZf8xLqkKFcSYOqJ3hlEVF-OoPXQijxJsYq7mh4K_A/rs:fit/g:sm/q:90/h:600/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTIwMDM0/OTY3LTE2MzAyMjI2/MzItNzY0Ni5qcGVn.jpeg' alt="Album Art"/>
+          </div>
+          <h3 id="title"><i class="fa-solid fa-spinner"></i></h3>
+          <h4 id="artist"><i class="fa-solid fa-spinner"></i></h4>
+        </div>
+        );
+      }
+      return(
+        <div className="song-info">
+          <div className="img-container">
+              <img src={albumArt} alt="Album Art"/>
+          </div>
+          <h3 id="title">{metadata.name}</h3>
+          <h4 id="artist">{metadata.artist}</h4>
+        </div>
+      );
     }
 
       return (
         <div className="player-container">
-          <div class="song-info">
-            <div className="img-container">
-                <img src="https://i1.sndcdn.com/artworks-cPfzaZ5r2hsdE65A-BxhYWg-t500x500.jpg" alt="Album Art"/>
+          <GetMetadata />
+          <div className="song-controls">
+            <div className="progress-container" id="progress-container" onClick={progressClick}>
+                <div style={{width: progressValue}} className="progress" id="progress"></div>
+                <div className="duration-wrapper">
+                    <span id="current-time">{GetCurrentTime()}</span>
+                    <span id="duration">{getDuration()}</span>
+                </div>
             </div>
-            <h2 id="title">{songs[songIndex].displayName}</h2>
-            <h3 id="artist">{songs[songIndex].artist}</h3>
-          </div>
-          <div className="progress-container" id="progress-container">
-              <div className="progress" id="progress"></div>
-              <div className="duration-wrapper">
-                  <span id="current-time">{GetCurrentTime()}</span>
-                  <span id="duration">{getDuration()}</span>
-              </div>
-          </div>
-          
-          <div class="player-controls">
-                <i className="fas fa-backward" id="prev" title="Previous" onClick={prevSong}></i>  
-               {isPlaying ? <i className="fas fa-pause main-button" id="play" title="Play" onClick={playPause}></i> : <i className="fas fa-play main-button" id="play" title="Play" onClick={playPause}></i>}
-                <i className="fas fa-forward" id="next" title="Next" onClick={nextSong}></i>
+            <div className="player-controls">
+                  <i className="fas fa-backward" id="prev" title="Previous" onClick={prevSong}></i>
+                 {isPlaying ? <i className="fas fa-pause main-button" id="play" title="Play" onClick={playPause}></i> : <i className="fas fa-play main-button" id="play" title="Play" onClick={playPause}></i>}
+                  <i className="fas fa-forward" id="next" title="Next" onClick={nextSong}></i>
+            </div>
           </div>
       </div>
       );

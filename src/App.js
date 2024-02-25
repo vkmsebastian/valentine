@@ -4,7 +4,7 @@ import 'css-doodle';
 import HeartAnimation from './Heart';
 import Player from './Player.js';
 import {Container, Row, Col, Card, Image} from 'react-bootstrap';
-import pic from './pic.JPG';
+import pic from './PlayerFiles/pic.JPG';
 
 function App() {
   return (
