@@ -19,8 +19,8 @@ body {
 .player-container {
   height: 500px;
   width: 400px;
-  background: #e7e7e743;
-  backdrop-filter: blur(5px);
+  background: transparent;
+  backdrop-filter: blur(10px);
   border-radius: 20px;
   box-shadow: 0 15px 30px 5px rgba(0, 0, 0, 0.3);
 }
@@ -43,7 +43,7 @@ body {
 
 /* Progress */
 .progress-container {
-  background: #fff;
+  background: #efefef;
   border-radius: 5px;
   cursor: pointer;
   margin: 40px 20px;
