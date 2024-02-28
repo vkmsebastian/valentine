@@ -16,6 +16,7 @@ export default function Player() {
   //Metadata vars
   const [metadata, setMetadata] = useState(null);
   const [albumArt, setAlbumArt] = useState(null);
+  const [time, setTime] = useState(0);
   const songsTitles = [
     "Sa Susunod Na Habang Buhay",
     "Pasalubong",
@@ -23,6 +24,8 @@ export default function Player() {
   ];
   let track = encodeURIComponent(songsTitles[songIndex]);
   let link = `https://ws.audioscrobbler.com/2.0/?method=album.search&album=${track}&api_key=bccc26978623f3244fbf922ec76f8117&format=json`;
+  let song = songbook[songIndex];
+  let duration = song.duration;
 
   function togglePlay(index) {
     songbook[index].paused ? songbook[index].play() : songbook[index].pause();
@@ -79,18 +82,16 @@ export default function Player() {
     setSongIndex(idx);
   }
 
-  //Song Duration hook
-  let song = songbook[songIndex];
-  const [time, setTime] = useState(0);
-
   function SongDuration() {
     setTimeout(() => {
-      song.ontimeupdate = () => setTime(song.currentTime);
+      song.ontimeupdate = () => {
+        setTime(song.currentTime);
+        setProgressValue((song.currentTime / duration) * 100 + "%");
+      };
     }, 900);
     let minutes = Math.floor(time / 60);
     let seconds = Math.floor(time % 60);
     let secondsStr = seconds < 10 ? "0" + seconds : seconds;
-    let duration = song.duration;
 
     if (isNaN(duration)) {
       return "";
@@ -108,8 +109,6 @@ export default function Player() {
   }
 
   function progressClick(e) {
-    let song = songbook[songIndex];
-    let duration = song.duration;
     const clickedPosition = e.clientX - e.target.getBoundingClientRect().left;
     const totalWidth = e.target.offsetWidth;
     const clickedPercentage = clickedPosition / totalWidth;
