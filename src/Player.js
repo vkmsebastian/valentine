@@ -170,20 +170,20 @@ export default function Player() {
           <div className="img-container">
             <img src={pic} alt="Album Art" />
           </div>
-          <h3 id="title">
+          <p id="title">
             <i class="fa-solid fa-spinner"></i>
-          </h3>
-          <h4 id="artist">
+          </p>
+          <p id="artist">
             <i class="fa-solid fa-spinner"></i>
-          </h4>
+          </p>
         </div>
       );
     }
     return (
       <div className="song-info">
         <AlbumArtComponent imageSrc={albumArts[albumArtIndex]} />
-        <h3 id="title">{metadata.name}</h3>
-        <h4 id="artist">{metadata.artist}</h4>
+        <p id="title">{metadata.name}</p>
+        <p id="artist">{metadata.artist}</p>
       </div>
     );
   }
