@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "./PlayerCSS.css";
 import axios from "axios";
 import ben1 from "./PlayerFiles/ben1.mp3";
@@ -22,10 +22,7 @@ export default function Player() {
     "Paninindigan Kita",
   ];
   let track = encodeURIComponent(songsTitles[songIndex]);
-  let link =
-    "https://ws.audioscrobbler.com/2.0/?method=album.search&album=" +
-    track +
-    "&api_key=bccc26978623f3244fbf922ec76f8117&format=json";
+  let link = `https://ws.audioscrobbler.com/2.0/?method=album.search&album=${track}&api_key=bccc26978623f3244fbf922ec76f8117&format=json`;
 
   function togglePlay(index) {
     songbook[index].paused ? songbook[index].play() : songbook[index].pause();
@@ -85,12 +82,11 @@ export default function Player() {
   //Song Duration hook
   let song = songbook[songIndex];
   const [time, setTime] = useState(0);
-  useEffect(() => {
-    setTimeout(() => setTime(song.currentTime), 500);
-    setProgressValue((song.currentTime / song.duration) * 100 + "%");
-  });
 
   function SongDuration() {
+    setTimeout(() => {
+      song.ontimeupdate = () => setTime(song.currentTime);
+    }, 900);
     let minutes = Math.floor(time / 60);
     let seconds = Math.floor(time % 60);
     let secondsStr = seconds < 10 ? "0" + seconds : seconds;
@@ -103,7 +99,6 @@ export default function Player() {
     let durationSeconds = Math.floor(duration % 60);
     let durationSecondsStr =
       durationSeconds < 10 ? "0" + durationSeconds : durationSeconds;
-
     return (
       <div className="duration-wrapper">
         <span id="current-time">{minutes + ":" + secondsStr}</span>
@@ -130,14 +125,16 @@ export default function Player() {
       .get(link)
       .then((response) => {
         const trackData = response.data.results.albummatches.album[0];
+        //Set Metadata
         setMetadata(trackData);
         const formattedAlbumArt = {};
         Object.keys(trackData.image[3]).forEach((key) => {
           const formattedKey = key.replace(/#text/g, "text");
           formattedAlbumArt[formattedKey] = trackData.image[3][key];
         });
+        //Set Album Art Data
         setAlbumArt(formattedAlbumArt.text);
-        // console.log("got metadata");
+        console.log("got metadata");
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -167,7 +164,7 @@ export default function Player() {
   });
 
   function GetMetadata() {
-    // console.log("metadata")
+    console.log("GetMetadata");
     if (!metadata) {
       return (
         <div className="song-info">
@@ -191,7 +188,6 @@ export default function Player() {
       </div>
     );
   }
-
   return (
     <div className="player-container">
       <GetMetadata />

@@ -14,9 +14,6 @@
 }
 
 .img-container {
-  font-family: "Roboto", sans-serif;
-  font-weight: 100;
-  font-style: normal;
   height: 300px;
   width: 300px;
   position: relative;
@@ -92,22 +89,9 @@
   top: 3px;
 }
 
-/* Media Query: iPhone (Vertical) */
-@media screen and (max-width: 376px) {
+@media screen and (max-width: 600px) {
   .player-container {
-    width: 95vw;
-  }
-
-  .img-container {
-    left: 29px;
-  }
-
-  h2 {
-    font-size: 20px;
-  }
-
-  h3 {
-    font-size: 15px;
+    margin-bottom: 30%;
   }
 }
 .player-controls {
