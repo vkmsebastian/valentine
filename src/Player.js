@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import "./PlayerCSS.css";
 import axios from "axios";
 import ben1 from "./PlayerFiles/ben1.mp3";
@@ -81,14 +81,23 @@ export default function Player() {
     }
     setSongIndex(idx);
   }
-
+  useEffect(() => {
+    const currentSong = songbook[songIndex];
+    currentSong.ontimeupdate = () => {
+      setTime(currentSong.currentTime);
+      setProgressValue(
+        (currentSong.currentTime / currentSong.duration) * 100 + "%"
+      );
+    };
+  }, [songbook, songIndex]);
   function SongDuration() {
-    setTimeout(() => {
-      song.ontimeupdate = () => {
-        setTime(song.currentTime);
-        setProgressValue((song.currentTime / duration) * 100 + "%");
-      };
-    }, 900);
+    // setTimeout(() => {
+    //   song.ontimeupdate = () => {
+    //     setTime(song.currentTime);
+    //     setProgressValue((song.currentTime / duration) * 100 + "%");
+    //   };
+    // }, 900);
+
     let minutes = Math.floor(time / 60);
     let seconds = Math.floor(time % 60);
     let secondsStr = seconds < 10 ? "0" + seconds : seconds;
@@ -138,7 +147,7 @@ export default function Player() {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, [songIndex]);
+  }, [link]);
 
   // Album Art Flipper
   let albumArts = [albumArt, pic];
@@ -163,7 +172,7 @@ export default function Player() {
   });
 
   function GetMetadata() {
-    console.log("GetMetadata");
+    // console.log("GetMetadata");
     if (!metadata) {
       return (
         <div className="song-info">
@@ -187,6 +196,7 @@ export default function Player() {
       </div>
     );
   }
+
   return (
     <div className="player-container">
       <GetMetadata />
